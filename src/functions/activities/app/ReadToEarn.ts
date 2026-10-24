@@ -6,14 +6,14 @@ import { randomBytes } from 'crypto'
 import { BaseActivity } from '../BaseActivity'
 
 export class ReadToEarn extends BaseActivity {
-    public async doReadToEarn() {
+    public async doReadToEarn(): Promise<boolean> {
         if (!this.bot.accessToken) {
             this.bot.logger.warn(
                 this.bot.isMobile,
                 'READ-TO-EARN',
                 '跳过：应用访问令牌不可用，此活动需要它！'
             )
-            return
+            return false
         }
 
         const delayMin = this.bot.config.searchSettings.readDelay.min
@@ -129,5 +129,7 @@ export class ReadToEarn extends BaseActivity {
                 `读文赚积分出错 | message=${error instanceof Error ? error.message : String(error)}`
             )
         }
+
+        return true
     }
 }

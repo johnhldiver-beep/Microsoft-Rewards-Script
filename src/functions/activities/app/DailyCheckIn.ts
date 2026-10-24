@@ -8,14 +8,14 @@ export class DailyCheckIn extends BaseActivity {
 
     private oldBalance: number = this.bot.userData.currentPoints
 
-    public async doDailyCheckIn() {
+    public async doDailyCheckIn(): Promise<boolean> {
         if (!this.bot.accessToken) {
             this.bot.logger.warn(
                 this.bot.isMobile,
                 'DAILY-CHECK-IN',
                 '跳过：应用访问令牌不可用，此活动需要它！'
             )
-            return
+            return false
         }
 
         this.oldBalance = Number(this.bot.userData.currentPoints ?? 0)
@@ -68,6 +68,8 @@ export class DailyCheckIn extends BaseActivity {
                 `每日签到出错 | message=${error instanceof Error ? error.message : String(error)}`
             )
         }
+
+        return true
     }
 
     private async submitDaily() {

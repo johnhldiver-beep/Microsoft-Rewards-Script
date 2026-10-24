@@ -2,7 +2,7 @@ import { BaseActivity } from '../BaseActivity'
 import type { AppDashboardData } from '../../../interface/AppDashBoardData'
 
 export class AppPromotions extends BaseActivity {
-    public async run(data: AppDashboardData): Promise<void> {
+    public async run(data: AppDashboardData): Promise<boolean> {
         const pending = data.response.promotions.filter(promotion => {
             const attributes = promotion.attributes
             return (
@@ -18,7 +18,7 @@ export class AppPromotions extends BaseActivity {
                 'APP-PROMOTIONS',
                 '所有"应用推广"项目已完成'
             )
-            return
+            return false
         }
 
         this.bot.logger.info(
@@ -33,5 +33,6 @@ export class AppPromotions extends BaseActivity {
             }
         }
         this.bot.logger.info(this.bot.isMobile, 'APP-PROMOTIONS', '"应用推广"项目处理完毕')
+        return true
     }
 }

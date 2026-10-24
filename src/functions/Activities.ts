@@ -57,16 +57,16 @@ export default class Activities {
         await new BrowserSearchOnBing(this.bot).doSearchOnBing(promotion, page)
     }
 
-    doDailySet = async (data: DashboardData): Promise<void> => {
-        await new DailySet(this.bot).run(data)
+    doDailySet = async (data: DashboardData): Promise<boolean> => {
+        return await new DailySet(this.bot).run(data)
     }
 
-    doMorePromotions = async (data: DashboardData): Promise<void> => {
-        await new MorePromotions(this.bot).run(data)
+    doMorePromotions = async (data: DashboardData): Promise<boolean> => {
+        return await new MorePromotions(this.bot).run(data)
     }
 
-    doPunchCardsMobile = async (data: DashboardData): Promise<void> => {
-        await new PunchCards(this.bot).runMobile(data)
+    doPunchCardsMobile = async (data: DashboardData): Promise<boolean> => {
+        return await new PunchCards(this.bot).runMobile(data)
     }
 
     doPunchCardsDesktop = async (): Promise<void> => {
@@ -93,9 +93,9 @@ export default class Activities {
         await claimReward.claimReward(child, parentId)
     }
 
-    doActivateSearchPerk = async (data: DashboardData): Promise<void> => {
+    doActivateSearchPerk = async (data: DashboardData): Promise<boolean> => {
         const activateSearchPerk = new ActivateSearchPerk(this.bot)
-        await activateSearchPerk.activate(data)
+        return await activateSearchPerk.activate(data)
     }
 
     doVisualSearch = async (data: DashboardData): Promise<number> => {
@@ -108,18 +108,18 @@ export default class Activities {
         await urlReward.doAppReward(promotion)
     }
 
-    doReadToEarn = async (): Promise<void> => {
+    doReadToEarn = async (): Promise<boolean> => {
         const readToEarn = new ReadToEarn(this.bot)
-        await readToEarn.doReadToEarn()
+        return await readToEarn.doReadToEarn()
     }
 
-    doDailyCheckIn = async (): Promise<void> => {
+    doDailyCheckIn = async (): Promise<boolean> => {
         const dailyCheckIn = new DailyCheckIn(this.bot)
-        await dailyCheckIn.doDailyCheckIn()
+        return await dailyCheckIn.doDailyCheckIn()
     }
 
-    doAppPromotions = async (data: AppDashboardData): Promise<void> => {
-        await new AppPromotions(this.bot).run(data)
+    doAppPromotions = async (data: AppDashboardData): Promise<boolean> => {
+        return await new AppPromotions(this.bot).run(data)
     }
 
     doEdgeBrowsing = async (data: DashboardData, signal?: AbortSignal): Promise<void> => {

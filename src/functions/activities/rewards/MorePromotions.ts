@@ -3,7 +3,7 @@ import type { BasePromotion, DashboardData } from '../../../interface/DashboardD
 import { PromotionActivityRunner } from './PromotionActivityRunner'
 
 export class MorePromotions extends BaseActivity {
-    public async run(data: DashboardData): Promise<void> {
+    public async run(data: DashboardData): Promise<boolean> {
         const promotions = [
             ...new Map(
                 [
@@ -22,7 +22,7 @@ export class MorePromotions extends BaseActivity {
                 'MORE-PROMOTIONS',
                 '所有"更多推广"项目已完成'
             )
-            return
+            return false
         }
 
         this.bot.logger.info(
@@ -32,6 +32,7 @@ export class MorePromotions extends BaseActivity {
         )
         await new PromotionActivityRunner(this.bot).run(pending)
         this.bot.logger.info(this.bot.isMobile, 'MORE-PROMOTIONS', '"更多推广"项目处理完毕')
+        return true
     }
 
     private isActionable(promotion: BasePromotion): boolean {

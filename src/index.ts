@@ -773,6 +773,7 @@ export class MicrosoftRewardsBot {
 
                 // 桌面会话预热：登录完立即保存并关闭，把需要人工批准的桌面登录
                 // 挪到运行开头（紧跟移动端批准之后）；后续桌面阶段从 SQLite 恢复会话，不再触发批准
+                // 预热失败（如批准超时无人处理）时置位，后续桌面阶段整体跳过，移动端任务照常跑完
                 const prewarmDesktop =
                     this.config.prewarmDesktopLogin &&
                     (this.config.workers.doPunchCards ||
@@ -941,18 +942,19 @@ export class MicrosoftRewardsBot {
                         await this.activities.doEnsureStreakProtection()
                     }
                     if (this.config.workers.doPunchCards) {
-                        await this.activities.doPunchCardsMobile(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doPunchCardsMobile(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (this.config.workers.doActivateSearchPerk) {
-                        await this.activities.doActivateSearchPerk(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doActivateSearchPerk(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
 
                     const plan = await this.searchManager.getSearchPoints()
                     const doMobileSearch = plan.doMobile
                     const doDesktopSearch = plan.doDesktop
-                    const desktopBrowserNeeded = this.config.workers.doPunchCards || doVisualSearch
+                    const desktopBrowserNeeded =
+                        (this.config.workers.doPunchCards || doVisualSearch)
 
                     if (doDesktopSearch && !desktopBrowserNeeded) {
                         this.cookies.desktop = [...this.cookies.mobile]
@@ -969,24 +971,24 @@ export class MicrosoftRewardsBot {
                     }
 
                     if (this.config.workers.doDailySet) {
-                        await this.activities.doDailySet(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doDailySet(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (this.config.workers.doMorePromotions) {
-                        await this.activities.doMorePromotions(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doMorePromotions(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doDailyCheckIn) {
-                        await this.activities.doDailyCheckIn()
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doDailyCheckIn()
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doAppPromotions && appData) {
-                        await this.activities.doAppPromotions(appData)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doAppPromotions(appData)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doReadToEarn) {
-                        await this.activities.doReadToEarn()
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doReadToEarn()
+                        if (didWork) await this.gapBetweenWorkers()
                     }
 
                     if (doMobileSearch) mobilePoints = await this.searchManager.searchMobile(account)
@@ -997,32 +999,32 @@ export class MicrosoftRewardsBot {
                         await this.activities.doEnsureStreakProtection()
                     }
                     if (this.config.workers.doDailySet) {
-                        await this.activities.doDailySet(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doDailySet(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (this.config.workers.doActivateSearchPerk) {
-                        await this.activities.doActivateSearchPerk(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doActivateSearchPerk(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (this.config.workers.doMorePromotions) {
-                        await this.activities.doMorePromotions(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doMorePromotions(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doDailyCheckIn) {
-                        await this.activities.doDailyCheckIn()
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doDailyCheckIn()
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doAppPromotions && appData) {
-                        await this.activities.doAppPromotions(appData)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doAppPromotions(appData)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (appAvailable && this.config.workers.doReadToEarn) {
-                        await this.activities.doReadToEarn()
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doReadToEarn()
+                        if (didWork) await this.gapBetweenWorkers()
                     }
                     if (this.config.workers.doPunchCards) {
-                        await this.activities.doPunchCardsMobile(data)
-                        await this.gapBetweenWorkers()
+                        const didWork = await this.activities.doPunchCardsMobile(data)
+                        if (didWork) await this.gapBetweenWorkers()
                     }
 
                     const plan = await this.searchManager.getSearchPoints()
@@ -1030,7 +1032,7 @@ export class MicrosoftRewardsBot {
                     const doDesktopSearch = plan.doDesktop
 
                     const desktopBrowserNeeded =
-                        this.config.workers.doPunchCards || doVisualSearch || (doDesktopSearch && !apiSearch)
+                        (this.config.workers.doPunchCards || doVisualSearch || (doDesktopSearch && !apiSearch))
 
                     if (apiSearch && doDesktopSearch && !desktopBrowserNeeded) {
                         this.cookies.desktop = [...this.cookies.mobile]

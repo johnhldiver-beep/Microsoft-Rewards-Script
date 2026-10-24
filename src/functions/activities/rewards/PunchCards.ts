@@ -4,15 +4,16 @@ import type { ParentQuest, QuestChild } from '../../../browser/ReactFunc'
 import type { BasePromotion, DashboardData, PunchCard } from '../../../interface/DashboardData'
 
 export class PunchCards extends BaseActivity {
-    public async runMobile(data: DashboardData): Promise<void> {
+    public async runMobile(data: DashboardData): Promise<boolean> {
         try {
-            await this.run(data)
+            return await this.run(data)
         } catch (error) {
             this.bot.logger.error(
                 'main',
                 'PUNCHCARD',
                 `移动端打卡任务失败 | ${error instanceof Error ? error.message : String(error)}`
             )
+            return true
         }
     }
 
@@ -42,9 +43,9 @@ export class PunchCards extends BaseActivity {
         }
     }
 
-    private async run(data: DashboardData): Promise<void> {
+    private async run(data: DashboardData): Promise<boolean> {
         const parents = await this.getParentQuests()
-        if (!parents) return
+        if (!parents) return false
 
         const apiById = new Map(
             (data.dashboard.punchCards ?? [])
@@ -60,7 +61,7 @@ export class PunchCards extends BaseActivity {
 
         if (!pending.length) {
             this.bot.logger.info(this.bot.isMobile, 'PUNCHCARD', '没有可执行的任务')
-            return
+            return false
         }
 
         this.bot.logger.info(
@@ -84,6 +85,7 @@ export class PunchCards extends BaseActivity {
         }
 
         this.bot.logger.info(this.bot.isMobile, 'PUNCHCARD', '任务处理完毕')
+        return true
     }
 
     private async getParentQuests(): Promise<ParentQuest[] | null> {

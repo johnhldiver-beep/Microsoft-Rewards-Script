@@ -46,7 +46,7 @@ export function detectSearchMultiplierPerk(dashboard: Dashboard): SearchMultipli
 }
 
 export class ActivateSearchPerk extends BaseActivity {
-    public async activate(data: DashboardData) {
+    public async activate(data: DashboardData): Promise<boolean> {
         const perk = detectSearchMultiplierPerk(data.dashboard)
         if (!perk) {
             this.bot.logger.debug(
@@ -54,7 +54,7 @@ export class ActivateSearchPerk extends BaseActivity {
                 'ACTIVATE-SEARCH-PERK',
                 'dashboard 上没有搜索倍数加成'
             )
-            return
+            return false
         }
 
         const live = await this.bot.browser.func.ensureOffer(perk.offerId)
@@ -64,7 +64,7 @@ export class ActivateSearchPerk extends BaseActivity {
                 'ACTIVATE-SEARCH-PERK',
                 `dashboard 上存在 ${perk.multiplier}x 搜索加成但页面快照中缺失 - 无法激活 | offerId=${perk.offerId}`
             )
-            return
+            return false
         }
 
         if (!live.reportable) {
@@ -74,7 +74,7 @@ export class ActivateSearchPerk extends BaseActivity {
                 `${perk.multiplier}x 搜索加成已激活（或不可激活） | offerId=${perk.offerId}`,
                 'green'
             )
-            return
+            return false
         }
 
         const actionId = this.bot.nextActions.reportActivity
@@ -84,7 +84,7 @@ export class ActivateSearchPerk extends BaseActivity {
                 'ACTIVATE-SEARCH-PERK',
                 '跳过：bundle 中未发现 "reportActivity" action id'
             )
-            return
+            return false
         }
 
         const activityType = live.activityType ?? 11
@@ -135,5 +135,7 @@ export class ActivateSearchPerk extends BaseActivity {
                 `激活搜索加成出错 | offerId=${perk.offerId} | message=${error instanceof Error ? error.message : String(error)}`
             )
         }
+
+        return true
     }
 }

@@ -3,14 +3,14 @@ import type { DashboardData } from '../../../interface/DashboardData'
 import { PromotionActivityRunner } from './PromotionActivityRunner'
 
 export class DailySet extends BaseActivity {
-    public async run(data: DashboardData): Promise<void> {
+    public async run(data: DashboardData): Promise<boolean> {
         const today = this.bot.utils.getFormattedDate()
         const pending =
             data.dashboard.dailySetPromotions[today]?.filter(item => !item.complete && item.pointProgressMax > 0) ?? []
 
         if (!pending.length) {
             this.bot.logger.info(this.bot.isMobile, 'DAILY-SET', '所有"每日任务"项目已完成')
-            return
+            return false
         }
 
         this.bot.logger.info(
@@ -20,5 +20,6 @@ export class DailySet extends BaseActivity {
         )
         await new PromotionActivityRunner(this.bot).run(pending)
         this.bot.logger.info(this.bot.isMobile, 'DAILY-SET', '"每日任务"项目处理完毕')
+        return true
     }
 }
